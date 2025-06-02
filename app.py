@@ -34,4 +34,12 @@ results = pd.read_sql_query(query, conn)
 
 st.subheader("📋 Available Food Listings")
 st.dataframe(results)
+st.subheader("📞 Contact Info of Providers (For Visible Listings)")
+if not results.empty:
+    provider_ids = tuple(results["Provider_ID"].unique())
+    contact_query = f"SELECT * FROM providers WHERE Provider_ID IN {provider_ids}"
+    contact_df = pd.read_sql_query(contact_query, conn)
+    st.dataframe(contact_df)
+else:
+    st.info("No food listings match your filters.")
 
