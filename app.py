@@ -20,4 +20,18 @@ meal_types = pd.read_sql_query("SELECT DISTINCT Meal_Type FROM food_listings", c
 selected_city = st.sidebar.selectbox("Select City", ["All"] + cities)
 selected_food_type = st.sidebar.selectbox("Select Food Type", ["All"] + food_types)
 selected_meal_type = st.sidebar.selectbox("Select Meal Type", ["All"] + meal_types)
+# Build SQL query based on filters
+query = "SELECT * FROM food_listings WHERE 1=1"
+
+if selected_city != "All":
+    query += f" AND Location = '{selected_city}'"
+if selected_food_type != "All":
+    query += f" AND Food_Type = '{selected_food_type}'"
+if selected_meal_type != "All":
+    query += f" AND Meal_Type = '{selected_meal_type}'"
+
+results = pd.read_sql_query(query, conn)
+
+st.subheader("📋 Available Food Listings")
+st.dataframe(results)
 
