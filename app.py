@@ -52,6 +52,70 @@ if not results.empty:
         st.dataframe(contact_df)
 else:
     st.info("No food listings match your filters.")
+    st.subheader("📊 Food Wastage Insights")
+
+tab1, tab2, tab3 = st.tabs(["Top Providers", "Food Trends", "Receiver Stats"])
+
+with tab1:
+    st.markdown("### 🏙️ Providers by City")
+    st.dataframe(pd.read_sql_query("""
+        SELECT City, COUNT(*) AS Provider_Count
+        FROM providers
+        GROUP BY City
+    """, conn))
+
+    st.markdown("### 🥇 Providers with Most Donations")
+    st.dataframe(pd.read_sql_query("""
+        SELECT p.Name, SUM(f.Quantity) AS Total_Donated
+        FROM food_listings f
+        JOIN providers p ON f.Provider_ID = p.Provider_ID
+        GROUP BY p.Provider_ID
+        ORDER BY Total_Donated DESC
+        LIMIT 5
+    """, conn))
+
+with tab2:
+    st.markdown("### 🍽️ Most Common Food Types")
+    st.dataframe(pd.read_sql_query("""
+        SELECT Food_Type, COUNT(*) AS Count
+        FROM food_listings
+        GROUP BY Food_Type
+        ORDER BY Count DESC
+    """, conn))
+
+    st.markdown("### 🍱 Meal Types Claimed Most")
+    st.dataframe(pd.read_sql_query("""
+        SELECT f.Meal_Type, COUNT(*) AS Claim_Count
+        FROM claims c
+        JOIN food_listings f ON c.Food_ID = f.Food_ID
+        GROUP BY f.Meal_Type
+        ORDER BY Claim_Count DESC
+    """, conn))
+
+    st.markdown("### 📦 Total Food Quantity Available")
+    st.dataframe(pd.read_sql_query("""
+        SELECT SUM(Quantity) AS Total_Quantity
+        FROM food_listings
+    """, conn))
+
+with tab3:
+    st.markdown("### 📈 Top 5 Receivers by Claims")
+    st.dataframe(pd.read_sql_query("""
+        SELECT r.Name, COUNT(*) AS Total_Claims
+        FROM claims c
+        JOIN receivers r ON c.Receiver_ID = r.Receiver_ID
+        GROUP BY c.Receiver_ID
+        ORDER BY Total_Claims DESC
+        LIMIT 5
+    """, conn))
+
+    st.markdown("### ✅ Claim Status Breakdown")
+    st.dataframe(pd.read_sql_query("""
+        SELECT Status, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM claims) AS Percentage
+        FROM claims
+        GROUP BY Status
+    """, conn))
+
 
 
 
