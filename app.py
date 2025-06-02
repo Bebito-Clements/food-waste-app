@@ -37,18 +37,22 @@ st.dataframe(results)
 st.subheader("📞 Contact Info of Providers (For Visible Listings)")
 
 if not results.empty:
-    provider_ids = tuple(results["Provider_ID"].unique())
+    provider_ids = results["Provider_ID"].dropna().unique().tolist()
 
-    # ✅ Fix: check if provider_ids is empty
-    if len(provider_ids) == 1:
+    if len(provider_ids) == 0:
+        st.warning("No provider IDs found for current listings.")
+    elif len(provider_ids) == 1:
         contact_query = f"SELECT * FROM providers WHERE Provider_ID = {provider_ids[0]}"
+        contact_df = pd.read_sql_query(contact_query, conn)
+        st.dataframe(contact_df)
     else:
-        contact_query = f"SELECT * FROM providers WHERE Provider_ID IN {provider_ids}"
-
-    contact_df = pd.read_sql_query(contact_query, conn)
-    st.dataframe(contact_df)
+        id_list = ",".join(str(id) for id in provider_ids)
+        contact_query = f"SELECT * FROM providers WHERE Provider_ID IN ({id_list})"
+        contact_df = pd.read_sql_query(contact_query, conn)
+        st.dataframe(contact_df)
 else:
     st.info("No food listings match your filters.")
+
 
 
 
