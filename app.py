@@ -9,4 +9,15 @@ st.title("🍱 Local Food Wastage Management System")
 # Database connection
 conn = sqlite3.connect("food_waste.db")
 cursor = conn.cursor()
+st.sidebar.header("🔍 Filter Food Listings")
+
+# Get unique values for dropdowns
+cities = pd.read_sql_query("SELECT DISTINCT Location FROM food_listings", conn)["Location"].tolist()
+food_types = pd.read_sql_query("SELECT DISTINCT Food_Type FROM food_listings", conn)["Food_Type"].tolist()
+meal_types = pd.read_sql_query("SELECT DISTINCT Meal_Type FROM food_listings", conn)["Meal_Type"].tolist()
+
+# Sidebar controls
+selected_city = st.sidebar.selectbox("Select City", ["All"] + cities)
+selected_food_type = st.sidebar.selectbox("Select Food Type", ["All"] + food_types)
+selected_meal_type = st.sidebar.selectbox("Select Meal Type", ["All"] + meal_types)
 
