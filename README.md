@@ -31,7 +31,13 @@ A data-driven web app built using **Python, SQLite, Pandas, and Streamlit** to c
 
 ## 🛠 How to Run Locally
 
-1. Clone the repo:
+# Clone the repo:
    ```bash
    git clone https://github.com/Bebito-Clements/food-waste-app.git
    cd food-waste-app
+   
+# Install required packages
+pip install streamlit pandas
+
+# Run the app
+streamlit run app.py
